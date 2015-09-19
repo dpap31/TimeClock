@@ -1,14 +1,13 @@
 # This class manages the creation of the CSV that tracks punches. It also
 # handles appending new timeclock entries based on query
 class TimeClock
-  COLUMN_HEADERS = %w(Date In Out Note)
   PUNCHES_PATH = File.join(APP_ROOT, 'punches.csv')
 
   def initialize(params)
     File.exist?(PUNCHES_PATH) ? (file_usable?) : (create_file)
     @action = action_valid?(params[:action])
     @note = params[:note]
-    @notification = valid_action_text
+    @notification = notification_text
     action_loop
   end
 
@@ -23,8 +22,9 @@ class TimeClock
   end
 
   def create_file
+    column_headers = %w(Date In Out Note)
     CSV.open(PUNCHES_PATH, 'w') do |csv|
-      csv << COLUMN_HEADERS
+      csv << column_headers
     end
   end
 
@@ -34,15 +34,25 @@ class TimeClock
     end
   end
 
-  def action_valid?(string = '')
-    white_list = ['in', 'out', 'IN', 'OUT']
-    white_list.include?(string) ? string.downcase.to_sym : :invalid
+  def last_punch
+    arr = []
+    CSV.foreach(PUNCHES_PATH, headers: true) { |punch| arr << punch }
+    punch = [arr.last[1], arr.last[2]].compact.reject { |e| e.to_s.empty? }.pop
+    punch_time = Time.strptime(punch, '%R').strftime('%I:%M %p')
+    "Last punch was at: #{punch_time}"
   end
 
-  def valid_action_text
+  def action_valid?(string = '')
+    white_list = %w(in out last)
+    white_list.include?(string.downcase) ? string.downcase.to_sym : :invalid
+  end
+
+  def notification_text
     case @action
     when :in, :out
       "Clocked #{@action} at #{Time.now.strftime('%I:%M %p')}"
+    when :last
+      last_punch
     when nil
       "Missing action: Use 'in or 'out'."
     else
@@ -64,7 +74,14 @@ class TimeClock
   end
 
   def action_loop
-    punch unless @action == :invalid
-    system %( echo "#{@notification}" )
+    case @action
+    when :in, :out
+      punch
+      system %( echo "#{@notification}" )
+    when :last
+      system %( echo "#{@notification}" )
+    when :invalid
+      system %( echo "#{@notification}" )
+    end
   end
 end
