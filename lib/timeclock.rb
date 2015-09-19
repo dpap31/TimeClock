@@ -1,13 +1,16 @@
+# This class manages the creation of the CSV that tracks punches. It also
+# handles appending new timeclock entries based on query
 class TimeClock
-  COLUMN_HEADERS = %w(Date In Out)
+  COLUMN_HEADERS = %w(Date In Out Note)
   PUNCHES_PATH = File.join(APP_ROOT, 'punches.csv')
 
-  def initialize(action)
+  def initialize(action, note = '')
     File.exist?(PUNCHES_PATH) ? (file_usable?) : (create_file)
+    @note = note
     action_loop(action)
   end
 
-private
+  private
 
   def action_loop(action)
     case action.downcase
@@ -30,17 +33,10 @@ private
     CSV.read(PUNCHES_PATH).length
   end
 
-  def last_line
-    CSV.open(PUNCHES_PATH) do |csv|
-      puts csv.parse_line(count_length)
-    end
-  end
-
   def append_file(arr)
     CSV.open(PUNCHES_PATH, 'ab') do |csv|
       csv << arr
     end
-    last_line
   end
 
   def file_usable?
@@ -52,12 +48,12 @@ private
   end
 
   def clock_in
-    arr = [Time.now.strftime('%m/%d/%Y'), Time.now.strftime('%R'), '']
+    arr = [Time.now.strftime('%m/%d/%Y'), Time.now.strftime('%R'), '', @note]
     append_file(arr)
   end
 
   def clock_out
-    arr = [Time.now.strftime('%m/%d/%Y'), '', Time.now.strftime('%R')]
+    arr = [Time.now.strftime('%m/%d/%Y'), '', Time.now.strftime('%R'), @note]
     append_file(arr)
   end
 end

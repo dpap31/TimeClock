@@ -1,8 +1,10 @@
 APP_ROOT = File.dirname(__FILE__)
-$:.unshift(File.join(APP_ROOT, 'lib'))
+$LOAD_PATH.unshift(File.join(APP_ROOT, 'lib'))
 
 require 'timeclock'
 require 'csv'
 require 'time'
 
-TimeClock.new('out')
+ACTION = ARGV.shift
+QUERY = ARGV.join(' ')
+TimeClock.new(ACTION, QUERY)
