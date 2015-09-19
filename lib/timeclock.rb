@@ -4,40 +4,15 @@ class TimeClock
   COLUMN_HEADERS = %w(Date In Out Note)
   PUNCHES_PATH = File.join(APP_ROOT, 'punches.csv')
 
-  def initialize(action, note = '')
+  def initialize(params)
     File.exist?(PUNCHES_PATH) ? (file_usable?) : (create_file)
-    @note = note
-    action_loop(action)
+    @action = action_valid?(params[:action])
+    @note = params[:note]
+    @notification = valid_action_text
+    action_loop
   end
 
   private
-
-  def action_loop(action)
-    case action.downcase
-    when 'in'
-      clock_in
-    when 'out'
-      clock_out
-    else
-      puts 'unrecognized action'
-    end
-  end
-
-  def create_file
-    CSV.open(PUNCHES_PATH, 'w') do |csv|
-      csv << COLUMN_HEADERS
-    end
-  end
-
-  def count_length
-    CSV.read(PUNCHES_PATH).length
-  end
-
-  def append_file(arr)
-    CSV.open(PUNCHES_PATH, 'ab') do |csv|
-      csv << arr
-    end
-  end
 
   def file_usable?
     return false unless PUNCHES_PATH
@@ -47,13 +22,49 @@ class TimeClock
     return true
   end
 
-  def clock_in
-    arr = [Time.now.strftime('%m/%d/%Y'), Time.now.strftime('%R'), '', @note]
+  def create_file
+    CSV.open(PUNCHES_PATH, 'w') do |csv|
+      csv << COLUMN_HEADERS
+    end
+  end
+
+  def append_file(arr)
+    CSV.open(PUNCHES_PATH, 'ab') do |csv|
+      csv << arr
+    end
+  end
+
+  def action_valid?(string = '')
+    white_list = ['in', 'out', 'IN', 'OUT']
+    white_list.include?(string) ? string.downcase.to_sym : :invalid
+  end
+
+  def valid_action_text
+    case @action
+    when :in, :out
+      "Clocked #{@action} at #{Time.now.strftime('%I:%M %p')}"
+    when nil
+      "Missing action: Use 'in or 'out'."
+    else
+      "Invalid action: #{@action}. Use 'in or 'out'."
+    end
+  end
+
+  def punch
+    @action == :in ? (arr = clock_in) : (arr = clock_out)
     append_file(arr)
   end
 
+  def clock_in
+    [Time.now.strftime('%m/%d/%Y'), Time.now.strftime('%R'), '', @note]
+  end
+
   def clock_out
-    arr = [Time.now.strftime('%m/%d/%Y'), '', Time.now.strftime('%R'), @note]
-    append_file(arr)
+    [Time.now.strftime('%m/%d/%Y'), '', Time.now.strftime('%R'), @note]
+  end
+
+  def action_loop
+    punch unless @action == :invalid
+    system %( echo "#{@notification}" )
   end
 end

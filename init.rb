@@ -5,6 +5,8 @@ require 'timeclock'
 require 'csv'
 require 'time'
 
-ACTION = ARGV.shift
-QUERY = ARGV.join(' ')
-TimeClock.new(ACTION, QUERY)
+params = {}
+params[:action] = ARGV.shift
+params[:note] = ARGV.join(' ')
+
+TimeClock.new(params)
