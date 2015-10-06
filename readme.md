@@ -5,17 +5,13 @@ TimeClock is a simple ruby based time tracking script that stores punches and as
 
 ## Actions
 
-**In**
-The "in" action writes the current time to a CSV in the "in" column. An optional note can be included as well.
+**In** - The "in" action writes the current time to a CSV in the "in" column. An optional note can be included as well.
 
-**Out**
-The "out" action writes the current time to a CSV in the "out" column. An optional note can be included as well.
+**Out** - The "out" action writes the current time to a CSV in the "out" column. An optional note can be included as well.
 
-**Last**
-The "last" action displays the last punch made.
+**Last** - The "last" action displays the last punch made.
 
-**Open**
-The "open" action displays the CSV spreadsheet.
+**Open** - The "open" action displays the CSV spreadsheet.
 
 ## Configuration
 
