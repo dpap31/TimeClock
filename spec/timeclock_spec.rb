@@ -40,27 +40,42 @@ describe '#initialize' do
 end
 
 describe '#launch!' do
-  it 'IN display notification' do
-    tc = TimeClock.new(action: 'in')
-    expect(tc).to receive(:system).with(" echo \"Clocked in at #{Time.now.strftime('%I:%M %p')}\" ")
-    tc.launch!
+  context 'IN' do
+    it 'displays notification' do
+      tc = TimeClock.new(action: 'in')
+      expect(tc).to receive(:system).with(" echo \"Clocked in at #{Time.now.strftime('%I:%M %p')}\" ")
+      tc.launch!
+    end
   end
-  it 'OUT display notification' do
-    tc = TimeClock.new(action: 'out')
-    expect(tc).to receive(:system).with(" echo \"Clocked out at #{Time.now.strftime('%I:%M %p')}\" ")
-    tc.launch!
+  context 'OUT' do
+    it 'displays notification' do
+      tc = TimeClock.new(action: 'out')
+      expect(tc).to receive(:system).with(" echo \"Clocked out at #{Time.now.strftime('%I:%M %p')}\" ")
+      tc.launch!
+    end
   end
-  it 'LAST display notification' do
-    clock_in = TimeClock.new(action: 'in')
-    expect(clock_in).to receive(:system).with(" echo \"Clocked in at #{Time.now.strftime('%I:%M %p')}\" ")
-    clock_in.launch!
-    tc = TimeClock.new(action: 'last')
-    expect(tc).to receive(:system).with(" echo \"Last punch was at: #{Time.now.strftime('%I:%M %p')}\" ")
-    tc.launch!
+  context 'LAST' do
+    it 'displays notification' do
+      clock_in = TimeClock.new(action: 'in')
+      expect(clock_in).to receive(:system).with(" echo \"Clocked in at #{Time.now.strftime('%I:%M %p')}\" ")
+      clock_in.launch!
+      tc = TimeClock.new(action: 'last')
+      expect(tc).to receive(:system).with(" echo \"Last punch was at: #{Time.now.strftime('%I:%M %p')}\" ")
+      tc.launch!
+    end
   end
-  it 'OPEN display notification' do
-    punch = Punches.new()
-    expect(punch).to receive(:system).with(" open \"/Users/dpappas/Sites/timeclock/spec/punches.csv\" ")
-    punch.open_csv
+  context 'OPEN' do
+    it 'displays notification' do
+      punch = Punches.new()
+      expect(punch).to receive(:system).with(" open \"#{APP_ROOT}/punches.csv\" ")
+      punch.open_csv
+    end
+  end
+  context 'INVALID' do
+    it 'displays notification' do
+      tc = TimeClock.new(action: 'invalid')
+      expect(tc).to receive(:system).with(" echo \"Invalid action. Use 'in, 'out', 'last' or 'open'.\" ")
+      tc.launch!
+    end
   end
 end

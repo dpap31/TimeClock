@@ -38,9 +38,9 @@ class TimeClock
     when :last
       "Last punch was at: #{@punch.last}"
     when nil
-      "Missing action: Use 'in or 'out'."
+      "Missing action: Use 'in, 'out', 'last' or 'open'."
     else
-      "Invalid action: #{@action}. Use 'in or 'out'."
+      "Invalid action. Use 'in, 'out', 'last' or 'open'."
     end
   end
 
