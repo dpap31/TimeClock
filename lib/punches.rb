@@ -3,8 +3,6 @@ require 'time'
 # This class manages the creation of the CSV that tracks punches. It also
 # controls actions based on alfred query
 class Punches
-  # APP_ROOT = File.dirname(__FILE__)
-  # $LOAD_PATH.unshift(File.join(APP_ROOT, 'lib'))
   PUNCHES_PATH = File.join(APP_ROOT, 'punches.csv')
 
   def initialize
@@ -34,7 +32,7 @@ class Punches
     return false unless File.exist?(PUNCHES_PATH)
     return false unless File.readable?(PUNCHES_PATH)
     return false unless File.writable?(PUNCHES_PATH)
-    return true
+    true
   end
 
   def create_file
@@ -45,7 +43,7 @@ class Punches
   end
 
   def append_file(arr)
-    CSV.open(PUNCHES_PATH, 'ab') do |csv|
+    CSV.open(PUNCHES_PATH, 'a+') do |csv|
       csv << arr
     end
   end
