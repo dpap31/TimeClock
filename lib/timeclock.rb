@@ -1,5 +1,3 @@
-require 'punches'
-require 'time'
 # This class validates user input and controls actions based on the alfred
 # query recieved from the user.
 class TimeClock
@@ -14,21 +12,19 @@ class TimeClock
     case @action
     when :in, :out
       @punch.punch(@action)
-      display_notification
-    when :last
-      display_notification
+    when :divider
+      @punch.divider(@note)
     when :open
       @punch.open_csv
-    when :invalid
-      display_notification
     end
+    display_notification
   end
 
   private
 
   def action_valid?(string = '')
-    white_list = %w(in out last open)
-    white_list.include?(string.downcase) ? string.downcase.to_sym : :invalid
+    whitelist = %w(in out last open divider)
+    whitelist.include?(string.downcase) ? string.downcase.to_sym : :invalid
   end
 
   def notification_text
@@ -36,7 +32,11 @@ class TimeClock
     when :in, :out
       "Clocked #{@action} at #{Time.now.strftime('%I:%M %p')}"
     when :last
-      "Last punch was at: #{@punch.last}"
+      @punch.last.include?('**') ? 'Last punch added a divider' : "Last punch was at: #{@punch.last}"
+    when :divider
+      "Added divider: '#{@note}'"
+    when :open
+      'Opening punches CSV'
     when nil
       "Missing action: Use 'in, 'out', 'last' or 'open'."
     else

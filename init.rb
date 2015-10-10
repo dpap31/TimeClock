@@ -1,7 +1,9 @@
-APP_ROOT = File.dirname(__FILE__)
-$LOAD_PATH.unshift(File.join(APP_ROOT, 'lib'))
+require 'csv'
+require 'time'
 
-require 'timeclock'
+APP_ROOT = File.dirname(__FILE__)
+require_relative 'lib/punches'
+require_relative 'lib/timeclock'
 
 params = {}
 params[:action] = ARGV.shift

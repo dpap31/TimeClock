@@ -1,5 +1,3 @@
-require 'csv'
-require 'time'
 # This class manages the creation of the CSV that tracks punches. It also
 # controls actions based on alfred query
 class Punches
@@ -14,6 +12,11 @@ class Punches
     append_file(arr)
   end
 
+  def divider(title = '')
+    title.empty? ? (arr = add_divider('Divider')) : (arr = add_divider(title))
+    append_file(arr)
+  end
+
   def open_csv
     system %( open "#{PUNCHES_PATH}" )
   end
@@ -22,7 +25,7 @@ class Punches
     arr = []
     CSV.foreach(PUNCHES_PATH, headers: true) { |punch| arr << punch }
     punch = [arr.last[1], arr.last[2]].compact.reject { |e| e.to_s.empty? }.pop
-    Time.strptime(punch, '%R').strftime('%I:%M %p')
+    punch.include?('**') ? punch : (Time.strptime(punch, '%R').strftime('%I:%M %p'))
   end
 
   private
@@ -54,5 +57,9 @@ class Punches
 
   def clock_out
     [Time.now.strftime('%m/%d/%Y'), '', Time.now.strftime('%R'), @note]
+  end
+
+  def add_divider(title)
+    ['**********', title.upcase, '**********', '']
   end
 end

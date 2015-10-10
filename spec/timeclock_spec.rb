@@ -54,6 +54,13 @@ describe '#launch!' do
       tc.launch!
     end
   end
+  context 'DIVIDER' do
+    it 'Adds Divider' do
+      tc = TimeClock.new(action: 'divider', note: 'New Week')
+      expect(tc).to receive(:system).with(" echo \"Added divider: 'New Week'\" ")
+      tc.launch!
+    end
+  end
   context 'LAST' do
     it 'displays notification' do
       clock_in = TimeClock.new(action: 'in')
@@ -66,7 +73,7 @@ describe '#launch!' do
   end
   context 'OPEN' do
     it 'displays notification' do
-      punch = Punches.new()
+      punch = Punches.new
       expect(punch).to receive(:system).with(" open \"#{APP_ROOT}/punches.csv\" ")
       punch.open_csv
     end
