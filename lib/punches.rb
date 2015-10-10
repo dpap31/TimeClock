@@ -23,7 +23,7 @@ class Punches
 
   def last
     arr = []
-    CSV.foreach(PUNCHES_PATH, headers: true) { |punch| arr << punch }
+    CSV.foreach(PUNCHES_PATH, headers: true, row_sep: :auto) { |punch| arr << punch }
     punch = [arr.last[1], arr.last[2]].compact.reject { |e| e.to_s.empty? }.pop
     punch.include?('**') ? punch : (Time.strptime(punch, '%R').strftime('%I:%M %p'))
   end
@@ -49,6 +49,10 @@ class Punches
     CSV.open(PUNCHES_PATH, 'a+') do |csv|
       csv << arr
     end
+  end
+
+  def newline_check(arr)
+    arr.include?("\n") ? true : false
   end
 
   def clock_in

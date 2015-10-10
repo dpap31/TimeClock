@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe 'initialize' do
   it 'creates new punches.csv' do
-    rm_punches_csv
+    rm_punches_csv if File.file?("#{APP_ROOT}/punches.csv")
     expect(File.file?("#{APP_ROOT}/punches.csv")).to eq(false)
     Punches.new
     expect(File.file?("#{APP_ROOT}/punches.csv")).to eq(true)
@@ -26,13 +26,9 @@ end
 
 describe '#divider' do
   subject { Punches.new }
-  it 'appends default divider to end of CSV file' do
+  it 'appends divider to end of CSV file' do
     subject.divider
-    expect(subject.last).to eq('"**********"')
-  end
-  it 'appends user provided note divider to end of CSV file' do
-    subject.divider('new week')
-    expect(subject.last).to eq('new week')
+    expect(subject.last).to eq('**********')
   end
 end
 
