@@ -52,8 +52,8 @@ class Punches
   end
 
   def line_break?
-    line = `tail -n 1 #{PUNCHES_PATH}`
-    line.chars.last == ',' ? true : false
+    last_character = `tail -c 1 #{PUNCHES_PATH}`
+    last_character == ',' ? true : false
   end
 
   def clock_in
