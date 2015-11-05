@@ -8,8 +8,8 @@ class Punches
   end
 
   def punch(action)
-    action == :in ? (arr = clock_in) : (arr = clock_out)
-    append_file(arr)
+    action == :in ? (punch = clock_in) : (punch = clock_out)
+    append_file(punch)
   end
 
   def divider(title = '')
@@ -23,7 +23,7 @@ class Punches
 
   def last
     arr = []
-    CSV.foreach(PUNCHES_PATH, headers: true, :row_sep => :auto) { |punch| arr << punch }
+    CSV.foreach(PUNCHES_PATH, headers: true, row_sep: :auto) { |punch| arr << punch }
     punch = [arr.last[1], arr.last[2]].compact.reject { |e| e.to_s.empty? }.pop
     punch.include?('**') ? punch : (Time.strptime(punch, '%R').strftime('%I:%M %p'))
   end
@@ -40,18 +40,18 @@ class Punches
 
   def create_file
     column_headers = %w(Date In Out Note)
-    CSV.open(PUNCHES_PATH, 'w', :row_sep => :auto) do |csv|
+    CSV.open(PUNCHES_PATH, 'w', row_sep: :auto) do |csv|
       csv << column_headers
     end
   end
 
   def append_file(arr)
-    CSV.open(PUNCHES_PATH, 'a+', :row_sep => :auto) do |csv|
-      line_break? ?  (csv << [] << arr): (csv << arr)
+    CSV.open(PUNCHES_PATH, 'a+', row_sep: :auto) do |csv|
+      missing_line_break? ?  (csv << [] << arr): (csv << arr)
     end
   end
 
-  def line_break?
+  def missing_line_break?
     last_character = `tail -c 1 #{PUNCHES_PATH}`
     last_character == ',' ? true : false
   end
