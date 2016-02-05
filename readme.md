@@ -11,6 +11,8 @@ TimeClock is a simple ruby based time tracking script that stores punches and as
 
 **Last** - The "last" action displays the last punch made.
 
+**Divider** - The "divider" action adds a divider to the CSV to help you separate time periods.
+
 **Open** - The "open" action displays the CSV spreadsheet.
 
 ## Configuration
