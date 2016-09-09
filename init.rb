@@ -7,11 +7,9 @@ require_relative 'lib/punches'
 require_relative 'lib/timeclock'
 
 
-args = ARGV.pop.split(' ')
-
 params = {}
-params[:action] = args.first.downcase.to_sym
-params[:note] = args[1..-1].join(' ')
+params[:action] = ARGV.first.downcase.to_sym
+params[:note] = ARGV[1..-1].join(' ')
 
 def action_valid?(symbol = '')
   whitelist = %w(in out last open divider)
