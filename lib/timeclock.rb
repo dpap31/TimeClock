@@ -4,6 +4,7 @@ class TimeClock
   def initialize(params)
     params = params.merge!(date: Time.now.strftime('%m/%d/%Y'), time: Time.now.strftime('%R'))
     @action = params[:action]
+    @note = params[:note]
     @punch = Punches.new(params)
   end
 
@@ -27,11 +28,11 @@ class TimeClock
   def notification_text
     case @action
     when :in, :out
-      "Clocked #{@action} at #{Time.now.strftime('%I:%M %p')}"
+      "Clocked #{@action} at #{Time.now.strftime('%I:%M %p')}" << append_note(@note)
     when :last
-      @punch.last.include?('**') ? 'Last punch added a divider' : "Last punch was at: #{@punch.last}"
+      @punch.last.include?('**') ? 'Last punch added a divider' : "Last punch was at: #{@punch.last}" << append_note(@punch.last_note)
     when :divider
-      "Added divider"
+      "Added divider" << append_note(@note)
     when :open
       'Opening punches CSV'
     when nil
@@ -39,6 +40,11 @@ class TimeClock
     else
       "Invalid action. Use 'in, 'out', 'last' or 'open'."
     end
+  end
+
+  def append_note(note)
+    return "" if note == ""
+    "\nNote - #{note}"
   end
 
   def display_notification
