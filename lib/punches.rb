@@ -5,19 +5,17 @@ class Punches
 
   def initialize(params)
     File.exist?(PUNCHES_PATH) ? (file_usable?) : (create_file)
-    puts params
     @params = params
   end
 
   def punch
     case @params[:action]
     when :in
-      add_entry(clock_in)
+      add_row(clock_in)
     when :out
-      clock_out
-      add_entry(clock_out)
+      add_row(clock_out)
     when :divider
-      add_entry(add_divider)
+      add_row(add_divider)
     end
   end
 
@@ -49,9 +47,9 @@ class Punches
     end
   end
 
-  def add_entry(arr)
+  def add_row(arr)
     CSV.open(PUNCHES_PATH, 'a+', row_sep: :auto) do |csv|
-      missing_line_break? ?  (csv << [] << arr): (csv << arr)
+      missing_line_break? ?  (csv << [] << arr) : (csv << arr)
     end
   end
 
