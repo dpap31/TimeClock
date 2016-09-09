@@ -28,14 +28,14 @@ end
 describe '#launch!' do
   context 'IN' do
     it 'displays notification' do
-      tc = TimeClock.new(action: :in)
+      tc = TimeClock.new(action: :in, note: '')
       expect(tc).to receive(:system).with(" echo \"Clocked in at #{Time.now.strftime('%I:%M %p')}\" ")
       tc.launch!
     end
   end
   context 'OUT' do
     it 'displays notification' do
-      tc = TimeClock.new(action: :out)
+      tc = TimeClock.new(action: :out, note: '')
       expect(tc).to receive(:system).with(" echo \"Clocked out at #{Time.now.strftime('%I:%M %p')}\" ")
       tc.launch!
     end
@@ -43,13 +43,13 @@ describe '#launch!' do
   context 'DIVIDER' do
     it 'Adds Divider' do
       tc = TimeClock.new(action: :divider, note: 'New Week')
-      expect(tc).to receive(:system).with(" echo \"Added divider\" ")
+      expect(tc).to receive(:system).with(" echo \"Added divider\nNote - New Week\" ")
       tc.launch!
     end
   end
   context 'LAST' do
     it 'displays notification' do
-      clock_in = TimeClock.new(action: :in)
+      clock_in = TimeClock.new(action: :in, note: '')
       expect(clock_in).to receive(:system).with(" echo \"Clocked in at #{Time.now.strftime('%I:%M %p')}\" ")
       clock_in.launch!
       tc = TimeClock.new(action: :last)
