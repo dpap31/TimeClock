@@ -30,6 +30,13 @@ class Punches
     punch.include?('**') ? punch : (Time.strptime(punch, '%R').strftime('%I:%M %p'))
   end
 
+  def last_note
+    arr = []
+    CSV.foreach(PUNCHES_PATH, headers: true, row_sep: :auto) { |punch| arr << punch }
+    note = arr.last[3]
+    note == "" ? "" : note
+  end
+
   private
 
   def file_usable?
