@@ -3,18 +3,20 @@
 class Punches
   PUNCHES_PATH = File.join(APP_ROOT, 'punches.csv')
 
-  def initialize
+  def initialize(params)
     File.exist?(PUNCHES_PATH) ? (file_usable?) : (create_file)
+    @params = params
   end
 
-  def punch(action)
-    action == :in ? (punch = clock_in) : (punch = clock_out)
-    append_file(punch)
-  end
-
-  def divider(title = '')
-    title.empty? ? (arr = add_divider('Divider')) : (arr = add_divider(title))
-    append_file(arr)
+  def punch
+    case @params[:action]
+    when :in
+      add_row(clock_in)
+    when :out
+      add_row(clock_out)
+    when :divider
+      add_row(add_divider)
+    end
   end
 
   def open_csv
@@ -45,9 +47,9 @@ class Punches
     end
   end
 
-  def append_file(arr)
+  def add_row(arr)
     CSV.open(PUNCHES_PATH, 'a+', row_sep: :auto) do |csv|
-      missing_line_break? ?  (csv << [] << arr): (csv << arr)
+      missing_line_break? ?  (csv << [] << arr) : (csv << arr)
     end
   end
 
@@ -57,14 +59,15 @@ class Punches
   end
 
   def clock_in
-    [Time.now.strftime('%m/%d/%Y'), Time.now.strftime('%R'), '', @note]
+    [@params[:date], @params[:time], '', @params[:note]]
   end
 
   def clock_out
-    [Time.now.strftime('%m/%d/%Y'), '', Time.now.strftime('%R'), @note]
+    [@params[:date], '', @params[:time], @params[:note]]
   end
 
-  def add_divider(title)
+  def add_divider
+     title = @params[:note] == '' ? 'Divider' : @params[:note]
     ['**********', title.upcase, '**********', '']
   end
 end

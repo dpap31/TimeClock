@@ -2,18 +2,15 @@
 # query recieved from the user.
 class TimeClock
   def initialize(params)
-    @punch = Punches.new
-    @action = action_valid?(params[:action])
-    @note = params[:note]
-    @notification = notification_text
+    params = params.merge!(date: Time.now.strftime('%m/%d/%Y'), time: Time.now.strftime('%R'))
+    @action = params[:action]
+    @punch = Punches.new(params)
   end
 
   def launch!
     case @action
-    when :in, :out
-      @punch.punch(@action)
-    when :divider
-      @punch.divider(@note)
+    when :in, :out, :divider
+      @punch.punch
     when :open
       @punch.open_csv
     end
@@ -22,9 +19,9 @@ class TimeClock
 
   private
 
-  def action_valid?(string = '')
+  def action_valid?(symbol = '')
     whitelist = %w(in out last open divider)
-    whitelist.include?(string.downcase) ? string.downcase.to_sym : :invalid
+    whitelist.include?(symbol.to_s)
   end
 
   def notification_text
@@ -34,7 +31,7 @@ class TimeClock
     when :last
       @punch.last.include?('**') ? 'Last punch added a divider' : "Last punch was at: #{@punch.last}"
     when :divider
-      "Added divider: '#{@note}'"
+      "Added divider"
     when :open
       'Opening punches CSV'
     when nil
@@ -45,6 +42,6 @@ class TimeClock
   end
 
   def display_notification
-    system %( echo "#{@notification}" )
+    system %( echo "#{notification_text}" )
   end
 end
